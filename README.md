@@ -2,7 +2,10 @@ Inputs:
 One asset and one frozen daily-price dataset.
 
 Strategy:
-A moving average strategy that altrenates between holding the asset and holding cash.
+A moving average strategy.
+Check 50 EMA and 14 EMA. When 14 is above 50, take long trades. When 14 crosses below the 50, make short trades. 
+Assumes enough history exists.
+Fractional shares allowed.
 
 Timing:
 Market orders excexuted at the next eligible opening price.
