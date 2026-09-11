@@ -1,50 +1,58 @@
-open = [100.5, 101.25, 102.5, 102.75, 101.5, 99.5, 98.75, 100, 101.5, 102.5, 101, 99.5]
-close = [100, 101, 102, 103, 102, 100, 98, 99, 101, 103, 102, 100]
+import pandas as pd
+prices = pd.read_csv("SPY_daily.csv")
+
+open_prices = prices["Open"].tolist()
+close_prices = prices["Close"].tolist()
+dates = prices["Date"].tolist()
+
 cash = 20000
 target_exposure = 0
 shares = []
 portfolio = []
 relationship = None
 
-def EMA(close, num):
+def EMA(close_prices, num):
     EMA = []
     SMA = 0
     for i in range(num):
-        SMA += close[i]
+        SMA += close_prices[i]
     SMA = SMA / num
-    for i in range(len(close)):
+    for i in range(len(close_prices)):
         if i < num - 1:
             EMA.append(None)
         elif i == num - 1:
             EMA.append(SMA)
         else:
-            EMA.append(close[i]*(2/(1+num)) + EMA[i-1]*(1-2/(1+num)))
+            EMA.append(close_prices[i]*(2/(1+num)) + EMA[i-1]*(1-2/(1+num)))
     return EMA
 
-EMA_3 = EMA(close, 3)
-EMA_5 = EMA(close, 5)
+EMA_14 = EMA(close_prices, 14)
+EMA_50 = EMA(close_prices, 50)
 exposure = 0
 
-for i in range(len(open)):
+for i in range(len(open_prices)):
     if relationship == 1 and exposure <= 0.9:
         exposure += 0.1
     elif relationship == 0 and exposure >= 0.1:
         exposure -= 0.1
 
-    if EMA_3[i] == None or EMA_5[i] == None:
+    if EMA_14[i] == None or EMA_50[i] == None:
         relationship = None
-    elif EMA_3[i] > EMA_5[i]:
+    elif EMA_14[i] > EMA_50[i]:
         relationship = 1
-    elif EMA_3[i] == EMA_5[i]:
+    elif EMA_14[i] == EMA_50[i]:
         relationship = -1
     else:
         relationship = 0
     if shares:
-        shares.append(exposure * (cash + shares[i-1]*open[i]) / open[i])
+        shares.append(exposure * (cash + shares[i-1]*open_prices[i]) / open_prices[i])
     else:
-        shares.append(exposure * cash / open[i])
-    cash = cash - (shares[i]-shares[i-1]) * open[i]
-    portfolio.append(shares[i]*close[i] + cash)
-    print(portfolio[i])
+        shares.append(exposure * cash / open_prices[i])
+    cash = cash - (shares[i]-shares[i-1]) * open_prices[i]
+    portfolio.append(shares[i]*close_prices[i] + cash)
 
 
+print(f"Portfolio: {portfolio[-1]}")
+print(f"Cash: {cash}")
+print(f"Shares: {shares[-1]}")
+print(f"Return: {(portfolio[-1]-portfolio[0])/(portfolio[0])*100}%")
