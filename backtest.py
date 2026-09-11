@@ -11,7 +11,10 @@ shares = []
 portfolio = []
 relationship = None
 
-change_log = [[],[],[],[],[],[],[],[]]
+no_strat_cash = 20000
+no_strat_shares = no_strat_cash / open_prices[0]
+
+change_log = [[],[],[],[],[],[],[],[],[]]
 
 def EMA(close_prices, num):
     EMA = []
@@ -53,6 +56,7 @@ for i in range(len(open_prices)):
     cash = cash - (shares[i]-shares[i-1]) * open_prices[i]
     portfolio.append(shares[i]*close_prices[i] + cash)
 
+
     change_log[0].append(dates[i])
     if i > 0:
         change_log[1].append(EMA_14[i-1])
@@ -65,6 +69,7 @@ for i in range(len(open_prices)):
     change_log[5].append(shares[i])
     change_log[6].append(cash)
     change_log[7].append(portfolio[i])
+    change_log[8].append(no_strat_shares*close_prices[i])
 
 log = pd.DataFrame(change_log).T
 log.columns = [
@@ -76,6 +81,7 @@ log.columns = [
     "Shares Held",
     "Cash",
     "Portfolio Value",
+    "Portfolio Value No Strategy"
 ]
 log.to_csv("trade_log.csv", index=False)
 
@@ -83,3 +89,4 @@ print(f"Portfolio: {portfolio[-1]}")
 print(f"Cash: {cash}")
 print(f"Shares: {shares[-1]}")
 print(f"Return: {(portfolio[-1]-portfolio[0])/(portfolio[0])*100}%")
+print(f"Portfolio No Strategy: {no_strat_shares * close_prices[-1]}")
