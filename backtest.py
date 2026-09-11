@@ -11,6 +11,8 @@ shares = []
 portfolio = []
 relationship = None
 
+change_log = [[],[],[],[],[],[],[],[]]
+
 def EMA(close_prices, num):
     EMA = []
     SMA = 0
@@ -51,6 +53,31 @@ for i in range(len(open_prices)):
     cash = cash - (shares[i]-shares[i-1]) * open_prices[i]
     portfolio.append(shares[i]*close_prices[i] + cash)
 
+    change_log[0].append(dates[i])
+    if i > 0:
+        change_log[1].append(EMA_14[i-1])
+        change_log[2].append(EMA_50[i-1])
+    else:
+        change_log[1].append(None)
+        change_log[2].append(None)
+    change_log[3].append(exposure)
+    change_log[4].append(shares[i]-shares[i-1])
+    change_log[5].append(shares[i])
+    change_log[6].append(cash)
+    change_log[7].append(portfolio[i])
+
+log = pd.DataFrame(change_log).T
+log.columns = [
+    "Date",
+    "Previous 14 EMA",
+    "Previous 50 EMA",
+    "Target Exposure",
+    "Shares Traded",
+    "Shares Held",
+    "Cash",
+    "Portfolio Value",
+]
+log.to_csv("trade_log.csv", index=False)
 
 print(f"Portfolio: {portfolio[-1]}")
 print(f"Cash: {cash}")
