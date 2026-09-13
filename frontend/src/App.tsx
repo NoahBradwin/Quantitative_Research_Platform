@@ -30,7 +30,7 @@ function App() {
         </thead>
 
         <tbody>
-          {rows.slice(1,6).map((row, rowIndex) => (<tr key={rowIndex}>{row.map((cell, columnIndex) => (<td key={columnIndex}>{cell}</td>))}</tr>))}
+          {rows.slice(-10).map((row, rowIndex) => (<tr key={rowIndex}>{row.map((cell, columnIndex) => (<td key={columnIndex}>{cell}</td>))}</tr>))}
         </tbody>
       </table>
     </main>

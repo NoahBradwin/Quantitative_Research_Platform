@@ -83,7 +83,11 @@ log.columns = [
     "Portfolio Value",
     "Portfolio Value No Strategy"
 ]
-log.to_csv("trade_log.csv", index=False)
+
+for column in log.columns[1:]:
+    log[column] = pd.to_numeric(log[column])
+
+log.to_csv("trade_log.csv", index=False, float_format="%.2f")
 
 print(f"Portfolio: {portfolio[-1]}")
 print(f"Cash: {cash}")
